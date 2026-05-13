@@ -1,9 +1,8 @@
-/* ================================================================
-   Task-Flow — Cozy Café Receipt Board
-   Fonts: Caveat (display) + Nunito (body)
-   ================================================================ */
+/* Task-Flow styles
+   going for a cozy café receipt board vibe
+   Caveat for display text, Nunito for body */
 
-/* --- Reset & Variables ------------------------------------------- */
+/* reset and variables */
 
 *,
 *::before,
@@ -14,7 +13,7 @@
 }
 
 :root {
-    /* ── Café Palette ── */
+    /* cafe palette */
     --cream: #fff8e8;
     --cream-deep: #f4e7ce;
     --latte: #d8b98c;
@@ -35,7 +34,7 @@
     --shadow-medium: 0 18px 40px rgba(90, 62, 35, 0.16);
     --border-warm: #d6b17d;
 
-    /* ── Layout ── */
+    /* layout stuff */
     --radius: 16px;
     --radius-sm: 10px;
     --transition: 0.18s ease;
@@ -43,7 +42,7 @@
     --font-body: "Nunito", sans-serif;
 }
 
-/* --- Base -------------------------------------------------------- */
+/* base styles */
 
 html {
     scroll-behavior: smooth;
@@ -59,7 +58,7 @@ html {
     outline-offset: 2px;
 }
 
-/* Background overlay for readability */
+/* background overlay so the text is readable over the bg image */
 body::before {
     content: '';
     position: fixed;
@@ -77,9 +76,7 @@ body {
     min-height: 100vh;
 }
 
-/* ================================================================
-   HEADER
-   ================================================================ */
+/* header */
 
 .header {
     background: var(--espresso);
@@ -148,9 +145,7 @@ body {
     margin-top: -1px;
 }
 
-/* ================================================================
-   LAYOUT
-   ================================================================ */
+/* layout */
 
 .container {
     max-width: 760px;
@@ -160,9 +155,7 @@ body {
     z-index: 1;
 }
 
-/* ================================================================
-   ADD TASK CARD
-   ================================================================ */
+/* add task card */
 
 .card {
     background: var(--paper);
@@ -191,9 +184,7 @@ body {
     opacity: 0.85;
 }
 
-/* ================================================================
-   FORM
-   ================================================================ */
+/* form elements */
 
 .form-group {
     margin-bottom: 0.9rem;
@@ -261,9 +252,7 @@ textarea {
     margin-top: 0.2rem;
 }
 
-/* ================================================================
-   PRIORITY SLIDER
-   ================================================================ */
+/* priority slider */
 
 .priority-group {
     margin-top: 0.5rem;
@@ -354,9 +343,7 @@ input[type="range"]::-moz-range-thumb {
     color: var(--rose);
 }
 
-/* ================================================================
-   BUTTONS
-   ================================================================ */
+/* buttons */
 
 .btn {
     display: inline-flex;
@@ -374,7 +361,7 @@ input[type="range"]::-moz-range-thumb {
     position: relative;
 }
 
-/* Primary — café stamp */
+/* primary button, the main cafe colored one */
 .btn-primary {
     background: var(--coffee);
     color: var(--cream);
@@ -400,7 +387,7 @@ input[type="range"]::-moz-range-thumb {
     filter: brightness(1.8);
 }
 
-/* Secondary */
+/* secondary button */
 .btn-secondary {
     background: var(--cream);
     color: var(--espresso);
@@ -416,7 +403,7 @@ input[type="range"]::-moz-range-thumb {
     transform: translateY(1px);
 }
 
-/* Danger */
+/* danger button for delete actions */
 .btn-danger {
     background: var(--rose);
     color: var(--cream);
@@ -438,7 +425,7 @@ input[type="range"]::-moz-range-thumb {
     font-size: 1.1rem;
 }
 
-/* Icon action buttons */
+/* icon buttons for edit and delete on task cards */
 .btn-icon {
     background: none;
     border: none;
@@ -472,9 +459,7 @@ input[type="range"]::-moz-range-thumb {
     background: var(--rose-soft);
 }
 
-/* ================================================================
-   TASKS PANEL — Container card for task section
-   ================================================================ */
+/* tasks panel */
 
 .tasks-panel {
     background: rgba(255, 252, 245, 0.85);
@@ -486,9 +471,7 @@ input[type="range"]::-moz-range-thumb {
     padding: 1.5rem;
 }
 
-/* ================================================================
-   FILTER BUTTONS
-   ================================================================ */
+/* filter buttons */
 
 .filters {
     display: flex;
@@ -530,9 +513,7 @@ input[type="range"]::-moz-range-thumb {
     box-shadow: 0 2px 0 var(--espresso);
 }
 
-/* ================================================================
-   TASK LIST
-   ================================================================ */
+/* task list */
 
 .task-list {
     display: flex;
@@ -540,9 +521,7 @@ input[type="range"]::-moz-range-thumb {
     gap: 0.75rem;
 }
 
-/* ================================================================
-   TASK ITEM — Café card
-   ================================================================ */
+/* task card styling */
 
 .task-item {
     background: rgba(255, 255, 255, 0.72);
@@ -567,7 +546,7 @@ input[type="range"]::-moz-range-thumb {
     box-shadow: 0 8px 24px rgba(74, 55, 40, 0.12);
 }
 
-/* Left accent — changes with priority */
+/* left accent bar, color changes based on priority level */
 .task-item::before {
     content: '';
     position: absolute;
@@ -602,7 +581,7 @@ input[type="range"]::-moz-range-thumb {
     }
 }
 
-/* Completed state */
+/* when a task is marked as completed */
 .task-item.completed {
     background: rgba(246, 250, 240, 0.85);
     border-color: rgba(196, 216, 176, 0.4);
@@ -612,7 +591,7 @@ input[type="range"]::-moz-range-thumb {
     background: var(--olive);
 }
 
-/* ── Priority Badge ── */
+/* priority badge styling */
 .priority-badge {
     display: inline-flex;
     align-items: center;
@@ -640,7 +619,7 @@ input[type="range"]::-moz-range-thumb {
     color: var(--rose);
 }
 
-/* ── Checkbox ── */
+/* the checkbox for toggling task status */
 .task-checkbox {
     flex-shrink: 0;
     margin-top: 0.2rem;
@@ -679,7 +658,7 @@ input[type="range"]::-moz-range-thumb {
     font-weight: 900;
 }
 
-/* ── Content ── */
+/* task card content area */
 .task-content {
     flex: 1;
     min-width: 0;
@@ -715,7 +694,7 @@ input[type="range"]::-moz-range-thumb {
     color: #7a6a5a;
 }
 
-/* Date — receipt timestamp */
+/* created date, styled like a receipt timestamp */
 .task-meta {
     display: inline-block;
     margin-top: 0.5rem;
@@ -733,7 +712,7 @@ input[type="range"]::-moz-range-thumb {
     color: #5b7a4d;
 }
 
-/* ── Status Badge ── */
+/* status badge (pending/completed) */
 .task-badge {
     display: inline-flex;
     align-items: center;
@@ -772,7 +751,7 @@ input[type="range"]::-moz-range-thumb {
     opacity: 0.8;
 }
 
-/* ── Actions ── */
+/* action buttons on task cards */
 .task-actions {
     flex-shrink: 0;
     display: flex;
@@ -780,9 +759,7 @@ input[type="range"]::-moz-range-thumb {
     align-items: center;
 }
 
-/* ================================================================
-   EDIT MODE
-   ================================================================ */
+/* edit mode for inline editing */
 
 .edit-form {
     display: flex;
@@ -813,9 +790,7 @@ input[type="range"]::-moz-range-thumb {
     gap: 0.5rem;
 }
 
-/* ================================================================
-   EMPTY STATE
-   ================================================================ */
+/* empty state when theres no tasks */
 
 .empty-state {
     text-align: center;
@@ -855,9 +830,7 @@ input[type="range"]::-moz-range-thumb {
     color: var(--coffee);
 }
 
-/* ================================================================
-   LOADING
-   ================================================================ */
+/* loading spinner */
 
 .loading {
     display: flex;
@@ -878,9 +851,7 @@ input[type="range"]::-moz-range-thumb {
     to { transform: rotate(360deg); }
 }
 
-/* ================================================================
-   DELETE CONFIRMATION MODAL
-   ================================================================ */
+/* delete confirmation popup */
 
 .modal-overlay {
     position: fixed;
@@ -965,9 +936,7 @@ input[type="range"]::-moz-range-thumb {
     gap: 0.75rem;
 }
 
-/* ================================================================
-   TOAST NOTIFICATIONS
-   ================================================================ */
+/* toast notifications */
 
 .toast-container {
     position: fixed;
@@ -1000,7 +969,7 @@ input[type="range"]::-moz-range-thumb {
     object-fit: contain;
 }
 
-/* Success toast */
+/* green toast for success messages */
 .toast.success {
     background: var(--paper-strong);
     color: var(--olive);
@@ -1010,7 +979,7 @@ input[type="range"]::-moz-range-thumb {
     filter: sepia(0.3) hue-rotate(50deg);
 }
 
-/* Error toast */
+/* red toast for error messages */
 .toast.error {
     background: var(--paper-strong);
     color: var(--rose);
@@ -1020,7 +989,7 @@ input[type="range"]::-moz-range-thumb {
     filter: sepia(0.3) hue-rotate(-20deg);
 }
 
-/* Info toast */
+/* blue-ish toast for info messages */
 .toast.info {
     background: var(--paper-strong);
     color: var(--espresso);
@@ -1044,11 +1013,9 @@ input[type="range"]::-moz-range-thumb {
     to   { transform: translateX(120%); opacity: 0; }
 }
 
-/* ================================================================
-   RESPONSIVE
-   ================================================================ */
+/* responsive breakpoints */
 
-/* ── Tablet ── */
+/* tablet breakpoint */
 @media (max-width: 768px) {
     .container {
         max-width: 100%;
@@ -1082,7 +1049,7 @@ input[type="range"]::-moz-range-thumb {
     }
 }
 
-/* ── Mobile ── */
+/* mobile breakpoint */
 @media (max-width: 520px) {
     .header {
         padding: 0.85rem 1rem;
@@ -1208,7 +1175,7 @@ input[type="range"]::-moz-range-thumb {
     }
 }
 
-/* ── Small phones ── */
+/* really small phones */
 @media (max-width: 360px) {
     .mascot-wrap,
     .header-logo {
@@ -1258,9 +1225,7 @@ input[type="range"]::-moz-range-thumb {
     }
 }
 
-/* ================================================================
-   DATE CHIP — Smart date detection pill below title input
-   ================================================================ */
+/* date chip that shows up when a deadline keyword is detected */
 
 .date-chip {
     display: flex;
@@ -1300,9 +1265,7 @@ input[type="range"]::-moz-range-thumb {
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ================================================================
-   DEADLINE BADGE — On task cards
-   ================================================================ */
+/* deadline badge on task cards */
 
 .task-meta-row {
     display: flex;
@@ -1338,9 +1301,7 @@ input[type="range"]::-moz-range-thumb {
     color: var(--rose);
 }
 
-/* ================================================================
-   UPCOMING BUTTON — Filter bar
-   ================================================================ */
+/* upcoming filter button */
 
 .upcoming-btn {
     background: rgba(185, 137, 86, 0.12) !important;
@@ -1355,9 +1316,7 @@ input[type="range"]::-moz-range-thumb {
     border-color: var(--caramel) !important;
 }
 
-/* ================================================================
-   TITLE INPUT WRAP — Highlight overlay
-   ================================================================ */
+/* title input with keyword highlighting */
 
 .title-input-wrap {
     position: relative;
@@ -1403,7 +1362,7 @@ input[type="range"]::-moz-range-thumb {
     50%      { box-shadow: 0 0 14px rgba(218, 165, 32, 0.45); }
 }
 
-/* ── Chip pop animation ── */
+/* the pop animation for the date chip */
 .chip-pop {
     animation: chipPopBounce 0.3s ease !important;
 }
@@ -1414,12 +1373,8 @@ input[type="range"]::-moz-range-thumb {
     100% { transform: scale(1); opacity: 1; }
 }
 
-/* ================================================================
-   DEADLINE DROPDOWN — Inline filter panel
-   ================================================================ */
-/* ================================================================
-   CALENDAR POPUP
-   ================================================================ */
+/* deadline filter panel */
+/* calendar popup for picking dates */
 
 .calendar-popup {
     background: var(--cream);
@@ -1484,7 +1439,7 @@ input[type="range"]::-moz-range-thumb {
     color: var(--rose);
 }
 
-/* ── Weekday headers ── */
+/* weekday labels in the calendar */
 
 .cal-weekdays {
     display: grid;
@@ -1502,7 +1457,7 @@ input[type="range"]::-moz-range-thumb {
     letter-spacing: 0.04em;
 }
 
-/* ── Day grid ── */
+/* the actual day cells in the calendar grid */
 
 .cal-grid {
     display: grid;
@@ -1586,9 +1541,7 @@ input[type="range"]::-moz-range-thumb {
     animation: none !important;
 }
 
-/* ================================================================
-   DATE FILTER ACTIVE INDICATOR
-   ================================================================ */
+/* active date filter indicator */
 
 .date-filter-active {
     display: flex;
@@ -1631,10 +1584,7 @@ input[type="range"]::-moz-range-thumb {
     color: #fff;
 }
 
-/* ================================================================
-   Inline SVG Icon Utilities
-   Used by buttons and badges that replaced emoji with custom SVGs
-   ================================================================ */
+/* svg icon utilities for the custom icons */
 
 .icon-inline {
     display: inline-block;
@@ -1654,13 +1604,13 @@ input[type="range"]::-moz-range-thumb {
     height: 0.85em;
 }
 
-/* Calendar nav chevrons need a bit more breathing room */
+/* calendar nav arrows need to be a bit bigger */
 .cal-nav .icon-inline {
     width: 1.3em;
     height: 1.3em;
 }
 
-/* Close buttons with SVG need the img to pick up the right size */
+/* making sure the close button SVGs are the right size */
 .date-chip-dismiss .icon-inline,
 .dfa-close .icon-inline,
 .cal-close .icon-inline {
@@ -1676,14 +1626,14 @@ input[type="range"]::-moz-range-thumb {
     opacity: 1;
 }
 
-/* Deadline badge icon sits neatly beside the text */
+/* calendar icon inside deadline badges */
 .deadline-badge .icon-inline {
     width: 0.9em;
     height: 0.9em;
     margin-right: 2px;
 }
 
-/* Upcoming button icon */
+/* the calendar icon in the upcoming button */
 .upcoming-btn .icon-inline {
     width: 1em;
     height: 1em;

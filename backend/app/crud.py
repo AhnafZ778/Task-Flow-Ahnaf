@@ -1,17 +1,29 @@
+## All the database operations for tasks live here
+## every function takes an optional db_path so the tests can use
+## their own separate database and not mess with the real one
+## also every mutation updates the updated_at timestamp automatically
+
 from datetime import datetime, timezone
-from typing import Optional
 from app.database import get_db
 
 
-def _now() -> str:
+def _now():
+    ## gets current UTC time as a string with microsecond precision
+    ## the microseconds are important because without them the
+    ## updated_at comparisons in the tests don't work properly
     return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f")
 
 
-def _row_to_dict(row) -> dict:
+def _row_to_dict(row):
+    ## sqlite3 Row objects arent JSON serializable on their own
+    ## so I need to convert them to regular dicts first
     return dict(row)
 
 
-def get_all_tasks(status_filter: Optional[str] = None, db_path: str | None = None) -> list[dict]:
+## fetches all tasks, can optionally filter by status
+## results are ordered by priority (highest first) then by newest
+## if status_filter is None or "all" it just returns everything
+def get_all_tasks(status_filter = None, db_path = None):
     conn = get_db(db_path)
     try:
         if status_filter and status_filter != "all":
@@ -23,24 +35,34 @@ def get_all_tasks(status_filter: Optional[str] = None, db_path: str | None = Non
             rows = conn.execute(
                 "SELECT * FROM tasks ORDER BY priority DESC, created_at DESC"
             ).fetchall()
-        return [_row_to_dict(r) for r in rows]
+
+        result = []
+        for row in rows:
+            result.append(_row_to_dict(row))
+        return result
     finally:
         conn.close()
 
 
-def get_task_by_id(task_id: int, db_path: str | None = None) -> Optional[dict]:
+## fetches a single task by its ID, returns None if it doesn't exist
+def get_task_by_id(task_id, db_path = None):
     conn = get_db(db_path)
     try:
         row = conn.execute(
             "SELECT * FROM tasks WHERE id = ?", (task_id,)
         ).fetchone()
-        return _row_to_dict(row) if row else None
+        if row:
+            return _row_to_dict(row)
+        else:
+            return None
     finally:
         conn.close()
 
 
-def get_tasks_grouped_by_deadline(db_path: str | None = None) -> dict:
-    ## Groups tasks by date portion of deadline for the calendar popup
+## returns tasks that have a deadline, grouped by date
+## the result looks like: { "2026-05-13": [task, ...], "2026-05-14": [task, ...] }
+## this is what powers the calendar popup on the frontend
+def get_tasks_grouped_by_deadline(db_path = None):
     conn = get_db(db_path)
     try:
         rows = conn.execute(
@@ -51,6 +73,9 @@ def get_tasks_grouped_by_deadline(db_path: str | None = None) -> dict:
             """
         ).fetchall()
 
+        ## grouping tasks by the date portion of their deadline
+        ## some deadlines include time like 2026-05-13T17:00 so I just
+        ## take the first 10 characters to get the YYYY-MM-DD part
         grouped = {}
         for row in rows:
             task = _row_to_dict(row)
@@ -65,13 +90,9 @@ def get_tasks_grouped_by_deadline(db_path: str | None = None) -> dict:
         conn.close()
 
 
-def create_task(
-    title: str,
-    description: Optional[str] = None,
-    priority: int = 2,
-    deadline: Optional[str] = None,
-    db_path: str | None = None,
-) -> dict:
+## inserts a new task into the database and returns the created row
+## status always starts as 'pending' and timestamps are set to now
+def create_task(title, description = None, priority = 2, deadline = None, db_path = None):
     now = _now()
     conn = get_db(db_path)
     try:
@@ -83,25 +104,21 @@ def create_task(
             (title, description, priority, deadline, now, now),
         )
         conn.commit()
-        return get_task_by_id(cursor.lastrowid, db_path)
+        new_id = cursor.lastrowid
+        return get_task_by_id(new_id, db_path)
     finally:
         conn.close()
 
 
-def update_task(
-    task_id: int,
-    title: Optional[str] = None,
-    description: Optional[str] = None,
-    status: Optional[str] = None,
-    priority: Optional[int] = None,
-    deadline: Optional[str] = None,
-    db_path: str | None = None,
-) -> Optional[dict]:
+## updates a task's fields, only the ones that are provided get changed
+## if a field is None it just keeps the existing value
+## returns the updated task or None if it wasn't found
+def update_task(task_id, title = None, description = None, status = None, priority = None, deadline = None, db_path = None):
     existing = get_task_by_id(task_id, db_path)
     if existing is None:
         return None
 
-    ## Fallback to existing values for any field not provided
+    ## using the existing values as fallbacks for anything that wasn't provided
     new_title = title if title is not None else existing["title"]
     new_desc = description if description is not None else existing["description"]
     new_status = status if status is not None else existing["status"]
@@ -126,12 +143,18 @@ def update_task(
     return get_task_by_id(task_id, db_path)
 
 
-def toggle_task_status(task_id: int, db_path: str | None = None) -> Optional[dict]:
+## flips a task between 'pending' and 'completed'
+## returns None if the task doesn't exist
+def toggle_task_status(task_id, db_path = None):
     existing = get_task_by_id(task_id, db_path)
     if existing is None:
         return None
 
-    new_status = "completed" if existing["status"] == "pending" else "pending"
+    current_status = existing["status"]
+    if current_status == "pending":
+        new_status = "completed"
+    else:
+        new_status = "pending"
     now = _now()
 
     conn = get_db(db_path)
@@ -147,11 +170,16 @@ def toggle_task_status(task_id: int, db_path: str | None = None) -> Optional[dic
     return get_task_by_id(task_id, db_path)
 
 
-def delete_task(task_id: int, db_path: str | None = None) -> bool:
+## deletes a task by ID
+## returns True if something was actually deleted, False if it didn't exist
+def delete_task(task_id, db_path = None):
     conn = get_db(db_path)
     try:
         cursor = conn.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
         conn.commit()
-        return cursor.rowcount > 0
+        if cursor.rowcount > 0:
+            return True
+        else:
+            return False
     finally:
         conn.close()

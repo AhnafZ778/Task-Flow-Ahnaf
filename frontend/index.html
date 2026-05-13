@@ -11,7 +11,8 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <!-- ===== HEADER ===== -->
+
+    <!-- the header with the coffee mascot and branding -->
     <header class="header">
       <div class="header-inner">
         <div class="mascot-wrap">
@@ -25,10 +26,9 @@
       </div>
     </header>
 
-    <!-- ===== MAIN ===== -->
     <main class="container">
 
-      <!-- Add Task Card -->
+      <!-- the form card for adding new tasks -->
       <section class="card" id="add-card">
         <h2>
           <img src="icons/icon_todo.png" alt="" />
@@ -44,9 +44,11 @@
                 placeholder="What needs to be done?"
                 maxlength="200"
               />
+              <!-- this overlay is for the keyword highlighting effect -->
               <div class="title-highlight-overlay" id="title-highlight" aria-hidden="true"></div>
             </div>
             <span class="field-error" id="title-error"></span>
+            <!-- date chip that appears when a deadline keyword is detected -->
             <div class="date-chip" id="date-chip" style="display: none;">
               <span id="date-chip-text"></span>
               <button type="button" class="date-chip-dismiss" id="date-chip-dismiss" title="Remove detected date"><img src="icons/icon_close.svg" alt="×" class="icon-inline icon-xs" /></button>
@@ -61,6 +63,7 @@
               maxlength="500"
             ></textarea>
           </div>
+          <!-- priority slider, goes from 1 (Low) to 3 (Hard) -->
           <div class="form-group priority-group">
             <label for="task-priority">Priority</label>
             <div class="priority-slider-wrap">
@@ -87,10 +90,10 @@
         </form>
       </section>
 
-      <!-- Tasks Panel -->
+      <!-- the panel where all the tasks show up -->
       <section class="tasks-panel" id="tasks-panel">
 
-        <!-- Filter Buttons -->
+        <!-- filter buttons for switching between views -->
         <div class="filters">
           <button class="filter-btn active" data-filter="all">All</button>
           <button class="filter-btn" data-filter="pending">Pending</button>
@@ -98,32 +101,32 @@
           <button class="filter-btn upcoming-btn" id="upcoming-btn"><img src="icons/icon_calendar.svg" alt="" class="icon-inline" /> Upcoming</button>
         </div>
 
-        <!-- Active date filter indicator -->
+        <!-- this shows up when a date filter is active from the calendar -->
         <div class="date-filter-active" id="date-filter-active" style="display: none;">
           <span class="dfa-label" id="dfa-label"></span>
           <button class="dfa-close" id="dfa-close" title="Clear date filter"><img src="icons/icon_close.svg" alt="×" class="icon-inline icon-xs" /></button>
         </div>
 
-        <!-- Loading Spinner -->
+        <!-- loading spinner -->
         <div class="loading" id="loading" style="display: none;">
           <div class="spinner"></div>
         </div>
 
-        <!-- Empty State -->
+        <!-- empty state when theres no tasks -->
         <div class="empty-state" id="empty-state" style="display: none;">
           <div class="empty-icon"><img src="icons/coffee_brewing.png" alt="No tasks" /></div>
           <h3 class="empty-title">No tasks brewing yet.</h3>
           <p class="empty-text">Add your first task to start the flow.</p>
         </div>
 
-        <!-- Task List -->
+        <!-- the actual task list, populated by JS -->
         <div class="task-list" id="task-list"></div>
 
       </section>
 
     </main>
 
-    <!-- ===== DELETE CONFIRMATION MODAL ===== -->
+    <!-- delete confirmation popup -->
     <div class="modal-overlay" id="delete-modal" style="display: none;">
       <div class="modal">
         <div class="modal-header">
@@ -140,10 +143,10 @@
       </div>
     </div>
 
-    <!-- ===== TOASTS ===== -->
+    <!-- toast notifications container -->
     <div class="toast-container" id="toast-container"></div>
 
-    <!-- ===== CALENDAR POPUP ===== -->
+    <!-- calendar popup for the upcoming date filter -->
     <div class="modal-overlay" id="calendar-modal" style="display: none;">
       <div class="calendar-popup">
         <div class="cal-header">

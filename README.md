@@ -1,170 +1,147 @@
 # Task-Flow
 
-A clean, full-stack personal task manager built as a technical assignment. The app supports full CRUD operations on tasks with a FastAPI backend, SQLite database, and a vanilla HTML/CSS/JavaScript frontend.
+Task-Flow is a small full-stack personal task manager built for the ACME AI Fellowship technical assignment.
+
+The goal was to keep the app simple, functional, and easy to run locally. It supports normal task CRUD operations, stores data in SQLite, and uses a plain frontend that talks to the backend through HTTP API calls.
 
 ## Tech Stack
 
-| Layer    | Technology                     |
-|----------|--------------------------------|
-| Backend  | Python 3.10+, FastAPI, Uvicorn |
-| Database | SQLite (file-based, local)     |
-| Frontend | HTML5, CSS3, Vanilla JavaScript|
-| Testing  | pytest, FastAPI TestClient     |
+**Backend:** Python, FastAPI, SQLite  
+**Frontend:** HTML, CSS, Vanilla JavaScript  
+**Testing:** Pytest, FastAPI TestClient
 
 ## Features
 
-- **View** all tasks in a clean list UI
-- **Add** a task with title (required) and optional description
-- **Edit** title and description inline
-- **Toggle** task status between pending and completed
-- **Delete** task with confirmation dialog
-- **Filter** tasks by All, Pending, or Completed
-- **Validation** — empty/whitespace-only titles rejected on both frontend and backend
-- **Persistent storage** — SQLite database, auto-created on startup
-- **Mobile responsive** — works on any screen size
-- **Completed task styling** — strikethrough, muted color, status badge
+- View all tasks
+- Add a task with title and optional description
+- Edit task title/description
+- Mark tasks as pending or completed
+- Delete tasks with confirmation
+- Filter tasks by All, Pending, and Completed
+- Frontend and backend validation for empty titles
+- SQLite database persistence
+- Responsive café-style UI
 
-## Folder Structure
+Extra features added after the required ones were working:
 
-```
+- Priority field
+- Deadline field
+- Simple natural-language deadline detection, for example `tomorrow at 6am`
+- Upcoming tasks calendar view
+- Backend test suite
+
+## Project Structure
+
+```text
 task-flow/
 ├── backend/
 │   ├── app/
-│   │   ├── __init__.py        # Package marker
-│   │   ├── main.py            # FastAPI app, CORS, lifespan, health route
-│   │   ├── database.py        # SQLite connection, table creation
-│   │   ├── schemas.py         # Pydantic request/response models
-│   │   ├── crud.py            # Database operations (SELECT, INSERT, UPDATE, DELETE)
-│   │   └── routes/
-│   │       ├── __init__.py
-│   │       └── tasks.py       # API endpoint handlers
+│   │   ├── main.py
+│   │   ├── database.py
+│   │   ├── schemas.py
+│   │   ├── crud.py
+│   │   └── routes/tasks.py
 │   ├── tests/
-│   │   ├── __init__.py
-│   │   └── test_tasks.py      # Automated tests
-│   ├── requirements.txt       # Python dependencies
-│   └── .env.example           # Environment variable template
+│   ├── requirements.txt
+│   └── .env.example
 ├── frontend/
-│   ├── index.html             # Main page
-│   ├── styles.css             # Custom styles
-│   └── app.js                 # Application logic
-└── README.md                  # This file
+│   ├── index.html
+│   ├── styles.css
+│   ├── app.js
+│   └── icons/
+└── README.md
 ```
 
 ## Prerequisites
 
-- Python 3.10 or higher
-- pip (Python package manager)
-- A modern web browser
-- No external database service needed — SQLite is built into Python
+- Python 3.10 or newer
+- pip
+- A modern browser
 
 ## Backend Setup
 
+From the project root:
+
 ```bash
-# Navigate to backend directory
-cd task-flow/backend
-
-# Create and activate virtual environment
+cd backend
 python3 -m venv venv
-source venv/bin/activate        # Linux/macOS
-# venv\Scripts\activate         # Windows
-
-# Install dependencies
+source venv/bin/activate
 pip install -r requirements.txt
-
-# (Optional) Copy and configure environment
-cp .env.example .env
-
-# Start the server
 uvicorn app.main:app --reload --port 8000
 ```
 
-The database file (`taskflow.db`) is created automatically on first startup. No manual migration or seeding needed.
+The backend will run at:
+
+```text
+http://localhost:8000
+```
 
 ## Frontend Setup
 
-In a separate terminal:
+Open a second terminal:
 
 ```bash
-cd task-flow/frontend
+cd frontend
 python3 -m http.server 3000
 ```
 
-Open **http://localhost:3000** in your browser.
+Then open:
 
-> The frontend expects the backend API at `http://localhost:8000`. If you change the backend port, update `API_BASE` in `frontend/app.js`.
+```text
+http://localhost:3000
+```
+
+## Database Setup
+
+No manual database setup is needed.
+
+The app uses SQLite. When the backend starts, it creates the `tasks` table automatically if it does not already exist.
+
+The database path can be configured through `backend/.env.example`:
+
+```env
+DATABASE_PATH=./taskflow.db
+HOST=0.0.0.0
+PORT=8000
+```
+
+Task data is stored in the backend SQLite database file, not in browser `localStorage` or hardcoded JavaScript arrays.
 
 ## API Endpoints
 
-| Method | Endpoint                | Description              | Success | Error Codes |
-|--------|-------------------------|--------------------------|---------|-------------|
-| GET    | `/`                     | Health check             | 200     | —           |
-| GET    | `/api/tasks`            | List all tasks           | 200     | 400 (bad filter) |
-| GET    | `/api/tasks?status=X`   | Filter by pending/completed/all | 200 | 400       |
-| POST   | `/api/tasks`            | Create a task            | 201     | 400         |
-| PUT    | `/api/tasks/{id}`       | Update task (title, description, status) | 200 | 400, 404 |
-| PATCH  | `/api/tasks/{id}/toggle`| Toggle pending/completed | 200     | 404         |
-| DELETE | `/api/tasks/{id}`       | Delete a task            | 200     | 404         |
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/tasks` | Get all tasks |
+| POST | `/api/tasks` | Create a task |
+| PUT | `/api/tasks/{id}` | Update a task |
+| PATCH | `/api/tasks/{id}/toggle` | Toggle pending/completed |
+| DELETE | `/api/tasks/{id}` | Delete a task |
 
-### Request/Response Examples
-
-**Create a task:**
-```bash
-curl -X POST http://localhost:8000/api/tasks \
-  -H "Content-Type: application/json" \
-  -d '{"title": "Buy groceries", "description": "Milk, eggs, bread"}'
-```
-```json
-{
-  "task": {
-    "id": 1,
-    "title": "Buy groceries",
-    "description": "Milk, eggs, bread",
-    "status": "pending",
-    "created_at": "2025-01-01 12:00:00",
-    "updated_at": "2025-01-01 12:00:00"
-  }
-}
-```
-
-**Validation error (empty title):**
-```bash
-curl -X POST http://localhost:8000/api/tasks \
-  -H "Content-Type: application/json" \
-  -d '{"title": ""}'
-```
-```json
-{"error": "title: Value error, Title cannot be empty or whitespace only"}
-```
-Status: `400 Bad Request`
+Validation errors return `400`, missing tasks return `404`, and successful task creation returns `201`.
 
 ## Running Tests
 
+From the `backend` folder:
+
 ```bash
-cd task-flow/backend
 source venv/bin/activate
-
-pytest tests/ -v
+python -m pytest tests/ -v
 ```
-
-Tests use an isolated temporary database file — your development database is not touched.
 
 ## Technical Decisions
 
-1. **Plain sqlite3 over SQLAlchemy** — The app has a single table with straightforward queries. Using raw `sqlite3` with parameterized queries keeps the codebase simple and easy to explain without ORM abstraction overhead.
+I chose FastAPI because I am more comfortable with Python than with JavaScript frameworks, and it allowed me to keep the backend clear and explainable. I used raw SQLite instead of an ORM because the project is small and the database logic is easier to follow this way.
 
-2. **DATABASE_PATH over DATABASE_URL** — Since we only use SQLite (a file path), a simple path variable is cleaner than a connection URL that would need parsing.
+The frontend is plain HTML, CSS, and JavaScript. I avoided React or other frameworks because the assignment did not require them, and I wanted the app to stay simple.
 
-3. **Pydantic validation → 400 (not 422)** — FastAPI defaults to HTTP 422 for validation errors. Custom exception handlers override this to return 400, which is more conventional for "bad user input."
+## AI Assistance Note
 
-4. **updated_at refreshed on every mutation** — Both edits and toggles update the `updated_at` timestamp to accurately reflect when the task was last modified.
+I used AI assistance while building this project. My Python fundamentals are stronger, and I have some basic HTML/CSS experience, but my JavaScript basics and frontend fundamentals are still weak. Because of that, I used AI mainly to help with the JavaScript flow, DOM handling, frontend polish, and reviewing whether the project matched the assignment requirements.
 
-5. **Vanilla frontend** — No React, Vue, or build tools. The app is a single HTML page with plain CSS and JavaScript, runnable with any static file server.
+I have gone through the code, tested the main flows, and made sure I understand how the backend, database, API routes, and frontend connect together.
 
-6. **Inline editing** — Tasks are edited in-place by replacing the content area with input fields, rather than opening a separate modal. This keeps the interaction lightweight.
+## Current Limitations
 
-7. **No authentication** — The assignment calls for a personal task manager. Auth would add complexity without value for a single-user local app.
-
-## AI Assistance Disclosure
-
-AI assistance (Claude) was used for planning, code generation, and debugging support during this project. All generated code was reviewed, understood, and validated by the developer. The architectural decisions, project structure, and implementation logic reflect the developer's own understanding and judgment.
-# Task-Flow-Ahnaf
+- No authentication, since the assignment is for a single-user task manager
+- No deployment link included
+- The date parser is a small helper feature, not a full natural-language engine
