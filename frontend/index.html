@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task-Flow — Personal Task Manager</title>
+    <meta name="description" content="A clean, cozy personal task manager to keep your day organized." />
+    <link rel="icon" type="image/png" href="icons/coffee_brewing.png" />
+    <link rel="preload" as="image" href="icons/coffee_brewing_blink.png" />
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+      <div class="header-inner">
+        <div class="mascot-wrap">
+          <img src="icons/coffee_brewing.png" alt="Task-Flow mascot" class="header-logo" id="mascot-open" />
+          <img src="icons/coffee_brewing_blink.png" alt="" class="header-logo header-logo-blink" id="mascot-blink" />
+        </div>
+        <div class="header-brand">
+          <h1>Task-Flow</h1>
+          <span class="subtitle">Personal Task Manager</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===== MAIN ===== -->
+    <main class="container">
+
+      <!-- Add Task Card -->
+      <section class="card" id="add-card">
+        <h2>
+          <img src="icons/icon_todo.png" alt="" />
+          Add Task
+        </h2>
+        <form id="add-task-form" autocomplete="off">
+          <div class="form-group">
+            <label for="task-title">Title <span class="required">*</span></label>
+            <div class="title-input-wrap" id="title-input-wrap">
+              <input
+                type="text"
+                id="task-title"
+                placeholder="What needs to be done?"
+                maxlength="200"
+              />
+              <div class="title-highlight-overlay" id="title-highlight" aria-hidden="true"></div>
+            </div>
+            <span class="field-error" id="title-error"></span>
+            <div class="date-chip" id="date-chip" style="display: none;">
+              <span id="date-chip-text"></span>
+              <button type="button" class="date-chip-dismiss" id="date-chip-dismiss" title="Remove detected date"><img src="icons/icon_close.svg" alt="×" class="icon-inline icon-xs" /></button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="task-description">Description</label>
+            <textarea
+              id="task-description"
+              placeholder="Optional details..."
+              rows="2"
+              maxlength="500"
+            ></textarea>
+          </div>
+          <div class="form-group priority-group">
+            <label for="task-priority">Priority</label>
+            <div class="priority-slider-wrap">
+              <input
+                type="range"
+                id="task-priority"
+                min="1"
+                max="3"
+                value="2"
+                step="1"
+              />
+              <div class="priority-labels">
+                <span>Low</span>
+                <span>Medium</span>
+                <span>Hard</span>
+              </div>
+              <div class="priority-value" id="priority-display">Medium</div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">
+            <img src="icons/icon_add.png" alt="" />
+            Add Task
+          </button>
+        </form>
+      </section>
+
+      <!-- Tasks Panel -->
+      <section class="tasks-panel" id="tasks-panel">
+
+        <!-- Filter Buttons -->
+        <div class="filters">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="pending">Pending</button>
+          <button class="filter-btn" data-filter="completed">Completed</button>
+          <button class="filter-btn upcoming-btn" id="upcoming-btn"><img src="icons/icon_calendar.svg" alt="" class="icon-inline" /> Upcoming</button>
+        </div>
+
+        <!-- Active date filter indicator -->
+        <div class="date-filter-active" id="date-filter-active" style="display: none;">
+          <span class="dfa-label" id="dfa-label"></span>
+          <button class="dfa-close" id="dfa-close" title="Clear date filter"><img src="icons/icon_close.svg" alt="×" class="icon-inline icon-xs" /></button>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div class="loading" id="loading" style="display: none;">
+          <div class="spinner"></div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="empty-state" style="display: none;">
+          <div class="empty-icon"><img src="icons/coffee_brewing.png" alt="No tasks" /></div>
+          <h3 class="empty-title">No tasks brewing yet.</h3>
+          <p class="empty-text">Add your first task to start the flow.</p>
+        </div>
+
+        <!-- Task List -->
+        <div class="task-list" id="task-list"></div>
+
+      </section>
+
+    </main>
+
+    <!-- ===== DELETE CONFIRMATION MODAL ===== -->
+    <div class="modal-overlay" id="delete-modal" style="display: none;">
+      <div class="modal">
+        <div class="modal-header">
+          <img src="icons/icon_trash.png" alt="" />
+          <h3>Delete Task</h3>
+        </div>
+        <div class="modal-body">
+          <p id="delete-message">Are you sure you want to delete this task?</p>
+          <div class="modal-actions">
+            <button class="btn btn-secondary" id="cancel-delete-btn">Cancel</button>
+            <button class="btn btn-danger" id="confirm-delete-btn">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== TOASTS ===== -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- ===== CALENDAR POPUP ===== -->
+    <div class="modal-overlay" id="calendar-modal" style="display: none;">
+      <div class="calendar-popup">
+        <div class="cal-header">
+          <button class="cal-nav" id="cal-prev" title="Previous month"><img src="icons/icon_chevron_left.svg" alt="‹" class="icon-inline" /></button>
+          <span class="cal-title" id="cal-title"></span>
+          <button class="cal-nav" id="cal-next" title="Next month"><img src="icons/icon_chevron_right.svg" alt="›" class="icon-inline" /></button>
+          <button class="cal-close" id="cal-close" title="Close"><img src="icons/icon_close.svg" alt="×" class="icon-inline icon-xs" /></button>
+        </div>
+        <div class="cal-weekdays">
+          <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
