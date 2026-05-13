@@ -1,6 +1,6 @@
 # Task-Flow
 
-Task-Flow is an ACME's personal task management platform that been developed to be a small full stack task manager for the ACME AI Fellowship assignment.
+Task-Flow is a personal task management platform that been developed to be a small full stack task manager for the ACME AI Fellowship assignment.
 
 The aim was to have a simple, functional and easily run locally application. It has a plain front end that communicate with the (backend) data via HTTP API operations, stores data in SQLite, and it is able to handle task CRUD operations.
 
