@@ -315,7 +315,14 @@ function startEdit(task) {
 
     contentEl.innerHTML = `
         <div class="edit-form">
-            <input type="text" class="edit-title" value="${escapeAttr(task.title)}" maxlength="200" placeholder="Title">
+            <div class="title-input-wrap">
+                <input type="text" class="edit-title" value="${escapeAttr(task.title)}" maxlength="200" placeholder="Title">
+                <div class="title-highlight-overlay edit-title-highlight" aria-hidden="true"></div>
+            </div>
+            <div class="date-chip edit-date-chip" style="display: none;">
+                <span class="edit-date-chip-text"></span>
+                <button type="button" class="date-chip-dismiss edit-date-chip-dismiss" title="Remove detected date"><img src="icons/icon_close.svg" alt="×" class="icon-inline icon-xs" /></button>
+            </div>
             <textarea class="edit-description" rows="2" maxlength="500" placeholder="Description (optional)">${task.description ? escapeHtml(task.description) : ""}</textarea>
             <div class="edit-priority-wrap">
                 <label>Priority</label>
@@ -338,6 +345,68 @@ function startEdit(task) {
     editTitle.focus();
     editTitle.setSelectionRange(editTitle.value.length, editTitle.value.length);
 
+    // Track detected deadline within this edit session
+    let editDeadline = task.deadline || null;
+    let editDateText = null;
+
+    const editHighlight = contentEl.querySelector(".edit-title-highlight");
+    const editDateChip = contentEl.querySelector(".edit-date-chip");
+    const editDateChipText = contentEl.querySelector(".edit-date-chip-text");
+    const editDateChipDismiss = contentEl.querySelector(".edit-date-chip-dismiss");
+
+    // If the task already has a deadline, show the chip immediately
+    if (editDeadline) {
+        editDateChipText.innerHTML = CALENDAR_ICON + " " + formatDeadlineLabel(editDeadline);
+        editDateChip.style.display = "flex";
+    }
+
+    // Natural language date detection on the edit title (same as add form)
+    editTitle.addEventListener("input", () => {
+        const text = editTitle.value;
+        const result = parseNaturalDate(text);
+
+        // Update highlight overlay
+        if (editHighlight) {
+            if (!text) {
+                editHighlight.innerHTML = "";
+            } else if (result && result.matchedText) {
+                const idx = text.toLowerCase().indexOf(result.matchedText);
+                if (idx !== -1) {
+                    const before = escapeHtml(text.substring(0, idx));
+                    const match = escapeHtml(text.substring(idx, idx + result.matchedText.length));
+                    const after = escapeHtml(text.substring(idx + result.matchedText.length));
+                    editHighlight.innerHTML = `${before}<mark class="date-highlight">${match}</mark>${after}`;
+                } else {
+                    editHighlight.innerHTML = escapeHtml(text);
+                }
+            } else {
+                editHighlight.innerHTML = escapeHtml(text);
+            }
+        }
+
+        if (result) {
+            editDeadline = result.iso;
+            editDateText = result.matchedText;
+            editDateChipText.innerHTML = CALENDAR_ICON + " " + formatDeadlineLabel(result.iso);
+            editDateChip.style.display = "flex";
+            editDateChip.classList.add("chip-pop");
+            setTimeout(() => editDateChip.classList.remove("chip-pop"), 300);
+        } else if (!editDeadline || editDateText) {
+            // Only clear if the deadline came from keyword detection, not pre-existing
+            editDeadline = null;
+            editDateText = null;
+            editDateChip.style.display = "none";
+        }
+    });
+
+    // Dismiss the date chip in edit mode
+    editDateChipDismiss.addEventListener("click", () => {
+        editDeadline = null;
+        editDateText = null;
+        editDateChip.style.display = "none";
+        if (editHighlight) editHighlight.innerHTML = escapeHtml(editTitle.value);
+    });
+
     // Live updating the priority label as user drags the slider
     editPriority.addEventListener("input", () => {
         const val = parseInt(editPriority.value);
@@ -345,9 +414,9 @@ function startEdit(task) {
         editPriorityLabel.className = `priority-value ${PRIORITY_CLASSES[val] || "priority-med"}`;
     });
 
-    // Save button handler
+    // Save button handler — pass the edit deadline state
     contentEl.querySelector(".save-edit-btn").addEventListener("click", () => {
-        saveEdit(task.id, contentEl);
+        saveEdit(task.id, contentEl, editDeadline, editDateText);
     });
 
     // Cancel just re-renders the task list to restore the original view
@@ -359,15 +428,21 @@ function startEdit(task) {
     editTitle.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
             e.preventDefault();
-            saveEdit(task.id, contentEl);
+            saveEdit(task.id, contentEl, editDeadline, editDateText);
         }
     });
 }
 
-async function saveEdit(taskId, contentEl) {
-    const title = contentEl.querySelector(".edit-title").value.trim();
+async function saveEdit(taskId, contentEl, editDeadline, editDateText) {
+    let title = contentEl.querySelector(".edit-title").value.trim();
     const description = contentEl.querySelector(".edit-description").value.trim() || null;
     const priority = parseInt(contentEl.querySelector(".edit-priority").value);
+    const deadline = editDeadline || null;
+
+    // Strip the detected date keywords from the title (same as handleAddTask)
+    if (deadline && editDateText) {
+        title = title.replace(editDateText, "").replace(/\s{2,}/g, " ").trim();
+    }
 
     if (!title) {
         showToast("Title cannot be empty", "error");
@@ -376,7 +451,7 @@ async function saveEdit(taskId, contentEl) {
     }
 
     try {
-        await apiRequest(`/api/tasks/${taskId}`, "PUT", { title, description, priority });
+        await apiRequest(`/api/tasks/${taskId}`, "PUT", { title, description, priority, deadline });
         showToast("Task updated!", "success");
         await loadTasks();
     } catch (err) {

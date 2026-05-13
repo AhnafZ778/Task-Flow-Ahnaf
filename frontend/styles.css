@@ -783,6 +783,9 @@ input[type="range"]::-moz-range-thumb {
 
 .edit-priority-wrap input[type="range"] {
     width: 140px;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
 }
 
 .edit-actions {
