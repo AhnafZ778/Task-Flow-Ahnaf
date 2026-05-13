@@ -1,34 +1,23 @@
 # Task-Flow
 
-Task-Flow is a small full-stack personal task manager built for the ACME AI Fellowship technical assignment.
+Task-Flow is an ACME's personal task management platform that been developed to be a small full stack task manager for the ACME AI Fellowship assignment.
 
-The goal was to keep the app simple, functional, and easy to run locally. It supports normal task CRUD operations, stores data in SQLite, and uses a plain frontend that talks to the backend through HTTP API calls.
+The aim was to have a simple, functional and easily run locally application. It has a plain front end that communicate with the (backend) data via HTTP API operations, stores data in SQLite, and it is able to handle task CRUD operations.
 
 ## Tech Stack
 
-**Backend:** Python, FastAPI, SQLite  
-**Frontend:** HTML, CSS, Vanilla JavaScript  
-**Testing:** Pytest, FastAPI TestClient
+This project comprises two parts: frontend (using JavaScript) and backend (using Python and FastAPI).  
+Fronted language(s): HTML, CSS, Vanilla JS  
+How many player rolls add up to 24?What is the sum total of all the player rolls in the game?
 
 ## Features
 
-- View all tasks
-- Add a task with title and optional description
-- Edit task title/description
-- Mark tasks as pending or completed
-- Delete tasks with confirmation
-- Filter tasks by All, Pending, and Completed
-- Frontend and backend validation for empty titles
+View, add, edit, delete and change (toggle) tasks
+Search task by the categories: All, Pending and Completed.
+There is no need to create a title that is empty.Empty titles don't have to be created either in front-end or behind.
 - SQLite database persistence
 - Responsive café-style UI
-
-Extra features added after the required ones were working:
-
-- Priority field
-- Deadline field
-- Simple natural-language deadline detection, for example `tomorrow at 6am`
-- Upcoming tasks calendar view
-- Backend test suite
+- Extra: Pattern is a priority, a deadline, a simple deadline detection, an upcoming tasks view and a backend test with adding extra priority and deadlines.
 
 ## Project Structure
 
@@ -60,7 +49,9 @@ task-flow/
 
 ## Backend Setup
 
-From the project root:
+### Linux / macOS
+
+In the root directory
 
 ```bash
 cd backend
@@ -70,7 +61,36 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
 
-The backend will run at:
+### Windows PowerShell
+
+In the root directory
+
+```powershell
+cd backend
+py -m venv venv
+.\venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
+```
+
+If PowerShell doesn't allow for activation script to be run, then run this once in the same terminal, and activate again:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\venv\Scripts\Activate.ps1
+```
+
+### Windows Command Prompt
+
+```cmd
+cd backend
+py -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
+```
+
+The compression should be performed by the back end at:
 
 ```text
 http://localhost:8000
@@ -78,11 +98,20 @@ http://localhost:8000
 
 ## Frontend Setup
 
-Open a second terminal:
+Run another terminal.Go back to terminal.
+
+### Linux / macOS
 
 ```bash
 cd frontend
 python3 -m http.server 3000
+```
+
+### Windows
+
+```powershell
+cd frontend
+py -m http.server 3000
 ```
 
 Then open:
@@ -93,11 +122,11 @@ http://localhost:3000
 
 ## Database Setup
 
-No manual database setup is needed.
+No need for hand setup of the databases.
 
-The app uses SQLite. When the backend starts, it creates the `tasks` table automatically if it does not already exist.
+Utilised to store data for this app is SQLite. The `tasks` table is automatically created on the backend when it is started, if it doesn't exist.
 
-The database path can be configured through `backend/.env.example`:
+They can be found in the backend/ .env.example:
 
 ```env
 DATABASE_PATH=./taskflow.db
@@ -105,7 +134,7 @@ HOST=0.0.0.0
 PORT=8000
 ```
 
-Task data is stored in the backend SQLite database file, not in browser `localStorage` or hardcoded JavaScript arrays.
+Task data stored in a SQLite database file that is on the backend.
 
 ## API Endpoints
 
@@ -114,34 +143,52 @@ Task data is stored in the backend SQLite database file, not in browser `localSt
 | GET | `/api/tasks` | Get all tasks |
 | POST | `/api/tasks` | Create a task |
 | PUT | `/api/tasks/{id}` | Update a task |
-| PATCH | `/api/tasks/{id}/toggle` | Toggle pending/completed |
+This operation changes the pending/completed status of a task.When using this operation, a task's ESA is has been toggled between pending and completed statuses.
 | DELETE | `/api/tasks/{id}` | Delete a task |
 
-Validation errors return `400`, missing tasks return `404`, and successful task creation returns `201`.
+The following are the validation errors: 400, These errors indicate that the task system does not exist: 404, These errors indicate that task system(s) have been created successfully: 201.
 
 ## Running Tests
 
-From the `backend` folder:
+### Linux / macOS
 
 ```bash
+cd backend
 source venv/bin/activate
+python -m pytest tests/ -v
+```
+
+### Windows PowerShell
+
+```powershell
+cd backend
+.\venv\Scripts\Activate.ps1
+python -m pytest tests/ -v
+```
+
+### Windows Command Prompt
+
+```cmd
+cd backend
+venv\Scripts\activate
 python -m pytest tests/ -v
 ```
 
 ## Technical Decisions
 
-I chose FastAPI because I am more comfortable with Python than with JavaScript frameworks, and it allowed me to keep the backend clear and explainable. I used raw SQLite instead of an ORM because the project is small and the database logic is easier to follow this way.
+I had some preference for FastAPI since I  prefer to work with Python as I have spent my entire academic journey coding in Python and have had little to no exposure to Javascript, which is why I maintained a simple and easy to explain backend. Since it was a small project, I used SQLite as my Database of choice.
 
-The frontend is plain HTML, CSS, and JavaScript. I avoided React or other frameworks because the assignment did not require them, and I wanted the app to stay simple.
+Frontend was done using just HTML, CSS and JavaScript. Sticking with smaller frontent frameworks was due to the fact that I didn't need them for the assignment, and I did not want to turn the project into a full stack project which included a front end framework.
 
 ## AI Assistance Note
 
-I used AI assistance while building this project. My Python fundamentals are stronger, and I have some basic HTML/CSS experience, but my JavaScript basics and frontend fundamentals are still weak. Because of that, I used AI mainly to help with the JavaScript flow, DOM handling, frontend polish, and reviewing whether the project matched the assignment requirements.
+Obtained help from AI when creating this project. My python knowledge is good, I have experience with HTML and CSS since I completed the course on it by the Odin Project, but my JavaScript background and basic experience with frontend is weak. Therefore, I took AI's help primarily for the JavaScript flow logic, DOM manipulation, finishing up the site and validation of the project with the assignment requirements.
 
-I have gone through the code, tested the main flows, and made sure I understand how the backend, database, API routes, and frontend connect together.
+However, I have ensured that I know how the codebase works which allowed me to learn a little about JS and also understand a lot of core concepts about Python from scratch again since I have become a little rusty with it.
 
 ## Current Limitations
 
-- No authentication, since the assignment is for a single-user task manager
-- No deployment link included
-- The date parser is a small helper feature, not a full natural-language engine
+- No authentication
+- Since It’s my Finals Week and I have very little time I couldn’t manage to deploy the website
+- Potentially would love to scale it into a Habit tracker of sorts which accumulates all the productivity tools I need in one place and will utilize automations and other shenanigans to make this an actual productivity tool that I can potentially use moving forward instead of being a dead project which just sits in my github repository.
+
