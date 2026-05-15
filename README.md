@@ -7,8 +7,7 @@ The aim was to have a simple, functional and easily run locally application. It 
 ## Tech Stack
 
 This project comprises two parts: frontend (using JavaScript) and backend (using Python and FastAPI).  
-Fronted language(s): HTML, CSS, Vanilla JS  
-How many player rolls add up to 24?What is the sum total of all the player rolls in the game?
+Fronted language(s): HTML, CSS, Vanilla JS 
 
 ## Features
 
